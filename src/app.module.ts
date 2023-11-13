@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config';
 import { RegionModule } from './region/region.module';
 import { SubRegionModule } from './sub-region/sub-region.module';
+import { SessionModule } from './sessions/session.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { SubRegionModule } from './sub-region/sub-region.module';
     }),
     RegionModule,
     SubRegionModule,
+    SessionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

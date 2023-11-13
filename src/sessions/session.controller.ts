@@ -1,0 +1,26 @@
+import { Controller, Get, Query } from '@nestjs/common';
+import { SessionType } from './entities/session.entity';
+import { ApiTags } from '@nestjs/swagger';
+import { SessionService } from './session.service';
+import { PhotographersSession } from './entities/photographer-session.entity';
+@ApiTags('session')
+@Controller('session')
+export class SessionController {
+  constructor(private readonly sessionService: SessionService) {}
+
+  @Get('/')
+  getSessions(): Promise<SessionType[]> {
+    return this.sessionService.findAll();
+  }
+
+  @Get('photographers/')
+  async getTicket(
+    @Query('sessionType') sessionType: string,
+    @Query('region') region: string,
+
+    @Query('fromDate') fromDate: string,
+    @Query('toDate') toDate: string,
+  ): Promise<PhotographersSession[]> {
+    return await this.sessionService.getPhotographerSessions({ sessionType, region, fromDate, toDate });
+  }
+}

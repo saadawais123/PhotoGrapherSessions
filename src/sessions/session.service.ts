@@ -26,23 +26,10 @@ export class SessionService {
   }: {
     sessionType: string;
     region: string;
-    fromDate: string;
-    toDate: string;
+    fromDate: Date;
+    toDate: Date;
   }): Promise<PhotographersSession[]> {
-    let whereClause = '';
-    if (sessionType) {
-      whereClause = whereClause + `photoGrapherSession.SessionName like '%${sessionType}%'`;
-    }
-    if (region) {
-      whereClause = whereClause + ` AND photoGrapherSession.Region like '%${region}%'`;
-    }
-    if (fromDate || toDate) {
-      whereClause =
-        whereClause +
-        `${fromDate ? `AND photoGrapherSession.SessionDate >= '${fromDate}'` : ''} ${
-          toDate ? `AND photoGrapherSession.SessionDate <= '${toDate}'` : ''
-        }`;
-    }
+    const whereClause = this.buildWhereClause({ sessionType, region, fromDate, toDate });
     const query = this.photographerSessionRepository
       .createQueryBuilder('photoGrapherSession')
       .select([
@@ -70,6 +57,32 @@ export class SessionService {
         sessionType,
         region,
       });
+    console.log('wqu', query.getQuery());
     return query.getRawMany();
   }
+
+  buildWhereClause = (conditions: { sessionType: string; region: string; fromDate: Date; toDate: Date }): string => {
+    const clauses: string[] = [];
+
+    if (conditions.sessionType) {
+      clauses.push(`photoGrapherSession.SessionName LIKE '%${conditions.sessionType}%'`);
+    }
+
+    if (conditions.region) {
+      clauses.push(`photoGrapherSession.Region LIKE '%${conditions.region}%'`);
+    }
+
+    if (conditions.fromDate || conditions.toDate) {
+      const dateClause = [];
+      if (conditions.fromDate) {
+        dateClause.push(`photoGrapherSession.SessionDate >= '${conditions.fromDate}'`);
+      }
+      if (conditions.toDate) {
+        dateClause.push(`photoGrapherSession.SessionDate <= '${conditions.toDate}'`);
+      }
+      clauses.push(dateClause.join(' AND '));
+    }
+
+    return clauses.length > 0 ? `(${clauses.join(' AND ')})` : '';
+  };
 }

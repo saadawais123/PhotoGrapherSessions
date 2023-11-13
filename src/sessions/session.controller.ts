@@ -18,8 +18,8 @@ export class SessionController {
     @Query('sessionType') sessionType: string,
     @Query('region') region: string,
 
-    @Query('fromDate') fromDate: string,
-    @Query('toDate') toDate: string,
+    @Query('fromDate') fromDate: Date,
+    @Query('toDate') toDate: Date,
   ): Promise<PhotographersSession[]> {
     return await this.sessionService.getPhotographerSessions({ sessionType, region, fromDate, toDate });
   }

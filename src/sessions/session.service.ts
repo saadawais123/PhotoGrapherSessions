@@ -29,13 +29,12 @@ export class SessionService {
     fromDate: Date;
     toDate: Date;
   }): Promise<PhotographersSession[]> {
-    const whereClause = this.buildWhereClause({ sessionType, region, fromDate, toDate });
+    const whereClause = this.buildWhereClause({ region, fromDate, toDate });
     const query = this.photographerSessionRepository
       .createQueryBuilder('photoGrapherSession')
       .select([
         'photoGrapherSession.SessionName as SessionName ',
         'photoGrapherSession.SessionDate as SessionDate',
-        'photoGrapherSession.SessionRowId as SessionType',
         'photoGrapherSession.Address as Address',
         'photoGrapherSession.LocationLongitude as LocationLongitude ',
         'photoGrapherSession.LocationLatitude as LocationLatitude',
@@ -51,22 +50,20 @@ export class SessionService {
         'photographer.PhotographerLastName as PhotographerLastName',
         'photographer.PhotographerPhone as PhotographerPhone',
         'photographer.PhotographerEmail as PhotographerEmail',
+        'sessionType.SessionType as SessionType',
       ])
+      .innerJoin(
+        'tblPhotographersSessionsTypes',
+        'sessionType',
+        `sessionType.SessionType = '${sessionType}' AND photoGrapherSession.SessionRowID = sessionType.SessionRowID`,
+      )
       .innerJoin('tblPhotographers', 'photographer', 'photographer.PhotographersID = photoGrapherSession.PhotographersID')
-      .where(whereClause, {
-        sessionType,
-        region,
-      });
-    console.log('wqu', query.getQuery());
+      .where(whereClause);
     return query.getRawMany();
   }
 
-  buildWhereClause = (conditions: { sessionType: string; region: string; fromDate: Date; toDate: Date }): string => {
+  buildWhereClause = (conditions: { region: string; fromDate: Date; toDate: Date }): string => {
     const clauses: string[] = [];
-
-    if (conditions.sessionType) {
-      clauses.push(`photoGrapherSession.SessionName LIKE '%${conditions.sessionType}%'`);
-    }
 
     if (conditions.region) {
       clauses.push(`photoGrapherSession.Region LIKE '%${conditions.region}%'`);

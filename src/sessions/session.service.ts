@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SessionType } from './entities/session.entity';
 import { PhotographersSession } from './entities/photographer-session.entity';
+import { LIMIT } from 'src/utils/constants';
 
 @Injectable()
 export class SessionService {
@@ -23,15 +24,20 @@ export class SessionService {
     region,
     fromDate,
     toDate,
+    page = 1,
   }: {
     sessionType: string;
     region: string;
     fromDate: Date;
     toDate: Date;
+    page: number;
   }): Promise<PhotographersSession[]> {
     const whereClause = this.buildWhereClause({ region, fromDate, toDate });
+    const offset = (page - 1) * LIMIT;
     const query = this.photographerSessionRepository
       .createQueryBuilder('photoGrapherSession')
+      .limit(LIMIT)
+      .offset(offset)
       .select([
         'photoGrapherSession.SessionName as SessionName ',
         'photoGrapherSession.SessionDate as SessionDate',
@@ -55,7 +61,9 @@ export class SessionService {
       .innerJoin(
         'tblPhotographersSessionsTypes',
         'sessionType',
-        `sessionType.SessionType = '${sessionType}' AND photoGrapherSession.SessionRowID = sessionType.SessionRowID`,
+        `${
+          sessionType ? `sessionType.SessionType = '${sessionType}' AND` : ''
+        } photoGrapherSession.SessionRowID = sessionType.SessionRowID`,
       )
       .innerJoin('tblPhotographers', 'photographer', 'photographer.PhotographersID = photoGrapherSession.PhotographersID')
       .where(whereClause);

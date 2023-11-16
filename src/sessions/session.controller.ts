@@ -20,7 +20,8 @@ export class SessionController {
 
     @Query('fromDate') fromDate: Date,
     @Query('toDate') toDate: Date,
+    @Query('page') page: number,
   ): Promise<PhotographersSession[]> {
-    return await this.sessionService.getPhotographerSessions({ sessionType, region, fromDate, toDate });
+    return await this.sessionService.getPhotographerSessions({ sessionType, region, fromDate, toDate, page });
   }
 }

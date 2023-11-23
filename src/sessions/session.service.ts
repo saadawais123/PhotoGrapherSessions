@@ -42,6 +42,7 @@ export class SessionService {
         'photoGrapherSession.SessionName as SessionName ',
         'photoGrapherSession.SessionDate as SessionDate',
         'photoGrapherSession.Address as Address',
+        'photoGrapherSession.Location as Location',
         'photoGrapherSession.LocationLongitude as LocationLongitude ',
         'photoGrapherSession.LocationLatitude as LocationLatitude',
         'photoGrapherSession.Region as Region',

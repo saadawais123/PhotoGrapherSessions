@@ -34,13 +34,24 @@ export class SessionService {
   }): Promise<PhotographersSession[]> {
     const whereClause = this.buildWhereClause({ region, fromDate, toDate });
     const offset = (page - 1) * LIMIT;
+    let dateWhereClause = '';
+    if (fromDate || toDate) {
+      const dateClause = [];
+      if (fromDate) {
+        dateClause.push(`sessionDates.SessionDate >= '${fromDate}'`);
+      }
+      if (toDate) {
+        dateClause.push(`sessionDates.SessionDate <= '${toDate}'`);
+      }
+      dateWhereClause = dateClause.length > 0 ? `(${dateClause.join(' AND ')})` : '';
+    }
+
     const query = this.photographerSessionRepository
       .createQueryBuilder('photoGrapherSession')
       .limit(LIMIT)
       .offset(offset)
       .select([
         'photoGrapherSession.SessionName as SessionName ',
-        'photoGrapherSession.SessionDate as SessionDate',
         'photoGrapherSession.Address as Address',
         'photoGrapherSession.Location as Location',
         'photoGrapherSession.LocationLongitude as LocationLongitude ',
@@ -58,6 +69,7 @@ export class SessionService {
         'photographer.PhotographerPhone as PhotographerPhone',
         'photographer.PhotographerEmail as PhotographerEmail',
         'sessionType.SessionType as SessionType',
+        'sessionDates.SessionDate as SessionDate',
       ])
       .innerJoin(
         'tblPhotographersSessionsTypes',
@@ -65,6 +77,11 @@ export class SessionService {
         `${
           sessionType ? `sessionType.SessionType = '${sessionType}' AND` : ''
         } photoGrapherSession.SessionRowID = sessionType.SessionRowID`,
+      )
+      .innerJoin(
+        'tblPhotographersSessionsDates',
+        'sessionDates',
+        `${dateWhereClause ? `${dateWhereClause} AND ` : ''} photoGrapherSession.SessionRowID = sessionDates.SessionRowID`,
       )
       .innerJoin('tblPhotographers', 'photographer', 'photographer.PhotographersID = photoGrapherSession.PhotographersID')
       .where(whereClause);
@@ -76,17 +93,6 @@ export class SessionService {
 
     if (conditions.region) {
       clauses.push(`photoGrapherSession.Region LIKE '%${conditions.region}%'`);
-    }
-
-    if (conditions.fromDate || conditions.toDate) {
-      const dateClause = [];
-      if (conditions.fromDate) {
-        dateClause.push(`photoGrapherSession.SessionDate >= '${conditions.fromDate}'`);
-      }
-      if (conditions.toDate) {
-        dateClause.push(`photoGrapherSession.SessionDate <= '${conditions.toDate}'`);
-      }
-      clauses.push(dateClause.join(' AND '));
     }
 
     return clauses.length > 0 ? `(${clauses.join(' AND ')})` : '';

@@ -9,7 +9,7 @@ export class Photographer {
   PhotographerCompanyName: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  Instragram: string;
+  Instagram: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   Website: string;

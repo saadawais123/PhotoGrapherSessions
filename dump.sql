@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `tblPhotographers`;
 CREATE TABLE `tblPhotographers` (
   `PhotographersID` int NOT NULL AUTO_INCREMENT,
   `PhotographerCompanyName` varchar(255) DEFAULT NULL,
-  `Instragram` varchar(255) DEFAULT NULL,
+  `Instagram` varchar(255) DEFAULT NULL,
   `Website` varchar(255) DEFAULT NULL,
   `Facebook` varchar(255) DEFAULT NULL,
   `PreferredContactMethod` varchar(255) DEFAULT NULL,

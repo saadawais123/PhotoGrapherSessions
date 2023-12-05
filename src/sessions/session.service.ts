@@ -61,7 +61,7 @@ export class SessionService {
         'photoGrapherSession.Region',
         'photoGrapherSession.PhotographersID',
         'photographer.PhotographerCompanyName',
-        'photographer.Instragram',
+        'photographer.Instagram',
         'photographer.Website',
         'photographer.Facebook',
         'photographer.PreferredContactMethod',

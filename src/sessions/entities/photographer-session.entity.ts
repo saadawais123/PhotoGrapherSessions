@@ -1,4 +1,9 @@
+// import { Photographer } from 'dist/entities/photographer.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { SessionType } from './session.entity';
+import { SessionDate } from './session-date.entity';
+import { Photographer } from 'src/entities/photographer.entity';
+import { PhotographerSessionType } from './photographer-session-type.entity';
 
 @Entity('tblPhotographersSessions')
 export class PhotographersSession {
@@ -40,4 +45,24 @@ export class PhotographersSession {
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   SubRegion: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  HowToBook: string;
+
+  @ManyToOne(() => Photographer, { eager: true })
+  @JoinColumn({ name: 'PhotographersID' })
+  photographer: Photographer;
+
+  @ManyToOne(
+    () => PhotographerSessionType,
+    (st) => {
+      st.PhotographersSessions;
+    },
+  )
+  @JoinColumn({ name: 'SessionRowID', referencedColumnName: 'SessionRowID' })
+  sessionType: PhotographerSessionType;
+
+  @ManyToOne(() => SessionDate, (sd) => sd.PhotographersSessions)
+  @JoinColumn({ name: 'SessionRowID', referencedColumnName: 'SessionRowID' })
+  sessionDates: SessionDate;
 }

@@ -51,41 +51,35 @@ export class SessionService {
       .limit(LIMIT)
       .offset(offset)
       .select([
-        'photoGrapherSession.SessionName as SessionName ',
-        'photoGrapherSession.Address as Address',
-        'photoGrapherSession.Location as Location',
-        'photoGrapherSession.LocationLongitude as LocationLongitude ',
-        'photoGrapherSession.LocationLatitude as LocationLatitude',
-        'photoGrapherSession.Region as Region',
-        'photoGrapherSession.PhotographersID as PhotographersID',
-        'photographer.PhotographerCompanyName as PhotographerCompanyName',
-        'photographer.Instragram as Instragram',
-        'photographer.Website as Website',
-        'photographer.Facebook as Facebook',
-        'photographer.PreferredContactMethod as PreferredContactMethod',
-        'photographer.CompanyNotes as CompanyNotes',
-        'photographer.PhotographerFirstName as PhotographerFirstName',
-        'photographer.PhotographerLastName as PhotographerLastName',
-        'photographer.PhotographerPhone as PhotographerPhone',
-        'photographer.PhotographerEmail as PhotographerEmail',
-        'sessionType.SessionType as SessionType',
-        'sessionDates.SessionDate as SessionDate',
+        'photoGrapherSession.SessionRowID',
+        'photoGrapherSession.SessionName',
+        'photoGrapherSession.HowToBook',
+        'photoGrapherSession.Address',
+        'photoGrapherSession.Location',
+        'photoGrapherSession.LocationLongitude',
+        'photoGrapherSession.LocationLatitude',
+        'photoGrapherSession.Region',
+        'photoGrapherSession.PhotographersID',
+        'photographer.PhotographerCompanyName',
+        'photographer.Instragram',
+        'photographer.Website',
+        'photographer.Facebook',
+        'photographer.PreferredContactMethod',
+        'photographer.CompanyNotes',
+        'photographer.PhotographerFirstName',
+        'photographer.PhotographerLastName',
+        'photographer.PhotographerPhone',
+        'photographer.PhotographerEmail',
+        'sessionDates.SessionDate',
       ])
-      .innerJoin(
-        'tblPhotographersSessionsTypes',
-        'sessionType',
-        `${
-          sessionType ? `sessionType.SessionType = '${sessionType}' AND` : ''
-        } photoGrapherSession.SessionRowID = sessionType.SessionRowID`,
-      )
-      .innerJoin(
-        'tblPhotographersSessionsDates',
-        'sessionDates',
-        `${dateWhereClause ? `${dateWhereClause} AND ` : ''} photoGrapherSession.SessionRowID = sessionDates.SessionRowID`,
-      )
-      .innerJoin('tblPhotographers', 'photographer', 'photographer.PhotographersID = photoGrapherSession.PhotographersID')
-      .where(whereClause);
-    return query.getRawMany();
+      .innerJoin('photoGrapherSession.photographer', 'photographer');
+
+    if (sessionType) {
+      query.addSelect('sessionType.SessionType').innerJoin('photoGrapherSession.sessionType', 'sessionType');
+    }
+    query.innerJoin('photoGrapherSession.sessionDates', 'sessionDates', `${dateWhereClause ? dateWhereClause : ''}`).where(whereClause);
+
+    return query.getMany();
   }
 
   buildWhereClause = (conditions: { region: string; fromDate: Date; toDate: Date }): string => {

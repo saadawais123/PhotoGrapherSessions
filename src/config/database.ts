@@ -15,6 +15,7 @@ export const dbConfig = (): MysqlConnectionOptions => ({
   database: process.env.MYSQLDATABASE,
   entities: [join(__dirname, '../**/*.entity{.ts,.js}')],
   synchronize: false,
+  logging: true,
 });
 
 if (process.env.NODE_ENV === 'development') {

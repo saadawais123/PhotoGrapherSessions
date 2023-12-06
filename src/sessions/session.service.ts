@@ -48,8 +48,7 @@ export class SessionService {
 
     const query = this.photographerSessionRepository
       .createQueryBuilder('photoGrapherSession')
-      .limit(LIMIT)
-      .offset(offset)
+
       .select([
         'photoGrapherSession.SessionRowID',
         'photoGrapherSession.SessionName',
@@ -71,12 +70,14 @@ export class SessionService {
         'photographer.PhotographerPhone',
         'photographer.PhotographerEmail',
         'sessionDates.SessionDate',
+        'sessionDates.PhotographersSessionsDateRowID',
       ])
       .innerJoin('photoGrapherSession.photographer', 'photographer');
 
     query.addSelect('sessionType.SessionType').leftJoin('photoGrapherSession.sessionType', 'sessionType');
 
-    query.innerJoin('photoGrapherSession.sessionDates', 'sessionDates', `${dateWhereClause ? dateWhereClause : ''}`).where(whereClause);
+    query.leftJoin('photoGrapherSession.sessionDates', 'sessionDates').where(whereClause);
+    query.take(LIMIT).skip(offset);
     return query.getMany();
   }
 

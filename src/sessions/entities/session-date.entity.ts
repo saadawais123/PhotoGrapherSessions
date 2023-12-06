@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { PhotographersSession } from './photographer-session.entity';
 
 @Entity('tblPhotographersSessionsDates')
@@ -12,6 +12,7 @@ export class SessionDate {
   @Column({ type: 'datetime', nullable: true })
   SessionDate: Date;
 
-  @OneToMany(() => PhotographersSession, (ph) => ph.sessionDates)
-  PhotographersSessions: PhotographersSession[];
+  @ManyToOne(() => PhotographersSession, (ph) => ph.sessionDates)
+  @JoinColumn({ name: 'SessionRowID', referencedColumnName: 'SessionRowID' })
+  PhotographersSessions: PhotographersSession;
 }

@@ -77,7 +77,6 @@ export class SessionService {
     query.addSelect('sessionType.SessionType').leftJoin('photoGrapherSession.sessionType', 'sessionType');
 
     query.innerJoin('photoGrapherSession.sessionDates', 'sessionDates', `${dateWhereClause ? dateWhereClause : ''}`).where(whereClause);
-
     return query.getMany();
   }
 

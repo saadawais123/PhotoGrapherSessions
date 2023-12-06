@@ -1,5 +1,5 @@
 // import { Photographer } from 'dist/entities/photographer.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { SessionType } from './session.entity';
 import { SessionDate } from './session-date.entity';
 import { Photographer } from 'src/entities/photographer.entity';
@@ -62,7 +62,7 @@ export class PhotographersSession {
   @JoinColumn({ name: 'SessionRowID', referencedColumnName: 'SessionRowID' })
   sessionType: PhotographerSessionType;
 
-  @ManyToOne(() => SessionDate, (sd) => sd.PhotographersSessions)
+  @OneToMany(() => SessionDate, (sd) => sd.PhotographersSessions)
   @JoinColumn({ name: 'SessionRowID', referencedColumnName: 'SessionRowID' })
-  sessionDates: SessionDate;
+  sessionDates: SessionDate[];
 }

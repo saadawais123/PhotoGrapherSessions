@@ -4,6 +4,7 @@ import { SessionType } from './session.entity';
 import { SessionDate } from './session-date.entity';
 import { Photographer } from 'src/entities/photographer.entity';
 import { PhotographerSessionType } from './photographer-session-type.entity';
+import { SessionImages } from './session-images.entity';
 
 @Entity('tblPhotographersSessions')
 export class PhotographersSession {
@@ -65,4 +66,8 @@ export class PhotographersSession {
   @OneToMany(() => SessionDate, (sd) => sd.PhotographersSessions)
   @JoinColumn({ name: 'SessionRowID', referencedColumnName: 'SessionRowID' })
   sessionDates: SessionDate[];
+
+  @OneToMany(() => SessionImages, (si) => si.PhotographersSessions)
+  @JoinColumn({ name: 'SessionRowID', referencedColumnName: 'SessionRowID' })
+  sessionImages: SessionImages;
 }

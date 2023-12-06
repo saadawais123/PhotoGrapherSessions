@@ -71,10 +71,14 @@ export class SessionService {
         'photographer.PhotographerEmail',
         'sessionDates.SessionDate',
         'sessionDates.PhotographersSessionsDateRowID',
+        'sessionImages.id',
+        'sessionImages.ImageUrl',
       ])
       .innerJoin('photoGrapherSession.photographer', 'photographer');
 
     query.addSelect('sessionType.SessionType').leftJoin('photoGrapherSession.sessionType', 'sessionType');
+
+    query.leftJoin('photoGrapherSession.sessionImages', 'sessionImages');
 
     query.leftJoin('photoGrapherSession.sessionDates', 'sessionDates').where(whereClause);
     query.take(LIMIT).skip(offset);

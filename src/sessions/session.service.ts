@@ -25,26 +25,32 @@ export class SessionService {
     fromDate,
     toDate,
     page = 1,
+    neLat,
+    swLat,
+    neLng,
+    swLng,
   }: {
     sessionType: string;
     region: string;
     fromDate: Date;
     toDate: Date;
     page: number;
+    neLat: number;
+    swLat: number;
+    neLng: number;
+    swLng: number;
   }): Promise<PhotographersSession[]> {
-    const whereClause = this.buildWhereClause({ region, fromDate, toDate });
+    const whereClause = this.buildWhereClause({
+      region,
+      fromDate,
+      toDate,
+      sessionType,
+      neLat,
+      swLat,
+      neLng,
+      swLng,
+    });
     const offset = (page - 1) * LIMIT;
-    let dateWhereClause = '';
-    if (fromDate || toDate) {
-      const dateClause = [];
-      if (fromDate) {
-        dateClause.push(`sessionDates.SessionDate >= '${fromDate}'`);
-      }
-      if (toDate) {
-        dateClause.push(`sessionDates.SessionDate <= '${toDate}'`);
-      }
-      dateWhereClause = dateClause.length > 0 ? `(${dateClause.join(' AND ')})` : '';
-    }
 
     const query = this.photographerSessionRepository
       .createQueryBuilder('photoGrapherSession')
@@ -81,15 +87,46 @@ export class SessionService {
     query.leftJoin('photoGrapherSession.sessionImages', 'sessionImages');
 
     query.leftJoin('photoGrapherSession.sessionDates', 'sessionDates').where(whereClause);
+
     query.take(LIMIT).skip(offset);
     return query.getMany();
   }
 
-  buildWhereClause = (conditions: { region: string; fromDate: Date; toDate: Date }): string => {
+  buildWhereClause = (conditions: {
+    region: string;
+    fromDate: Date;
+    toDate: Date;
+    sessionType: string;
+    neLat: number;
+    swLat: number;
+    neLng: number;
+    swLng: number;
+  }): string => {
     const clauses: string[] = [];
 
-    if (conditions.region) {
+    if (conditions.region && !conditions.neLat && !conditions.swLat && !conditions.neLng && !conditions.swLng) {
       clauses.push(`photoGrapherSession.Region LIKE '%${conditions.region}%'`);
+    }
+
+    if (conditions.neLat && conditions.swLat && conditions.neLng && conditions.swLng) {
+      clauses.push(
+        `photoGrapherSession.LocationLatitude <= ${conditions.neLat} AND photoGrapherSession.LocationLatitude >= ${conditions.swLat}`,
+      );
+      clauses.push(
+        `photoGrapherSession.LocationLongitude <= ${conditions.neLng} AND photoGrapherSession.LocationLongitude >= ${conditions.swLng}`,
+      );
+    }
+
+    if (conditions.sessionType) {
+      clauses.push(`sessionType.sessionType LIKE '${conditions.sessionType}'`);
+    }
+
+    if (conditions.fromDate) {
+      clauses.push(`sessionDates.SessionDate >= '${conditions.fromDate}'`);
+    }
+
+    if (conditions.toDate) {
+      clauses.push(`sessionDates.SessionDate <= '${conditions.toDate}'`);
     }
 
     return clauses.length > 0 ? `(${clauses.join(' AND ')})` : '';

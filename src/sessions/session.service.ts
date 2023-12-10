@@ -110,10 +110,10 @@ export class SessionService {
 
     if (conditions.neLat && conditions.swLat && conditions.neLng && conditions.swLng) {
       clauses.push(
-        `photoGrapherSession.LocationLatitude <= ${conditions.neLat} AND photoGrapherSession.LocationLatitude >= ${conditions.swLat}`,
+        `photoGrapherSession.LocationLatitude <= ${+conditions.neLat} AND photoGrapherSession.LocationLatitude >= ${+conditions.swLat}`,
       );
       clauses.push(
-        `photoGrapherSession.LocationLongitude <= ${conditions.neLng} AND photoGrapherSession.LocationLongitude >= ${conditions.swLng}`,
+        `photoGrapherSession.LocationLongitude <= ${+conditions.neLng} AND photoGrapherSession.LocationLongitude >= ${+conditions.swLng}`,
       );
     }
 
